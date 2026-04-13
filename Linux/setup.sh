@@ -28,7 +28,8 @@ fi
 # VARIÁVEIS DE CONFIGURAÇÃO GERAL
 # =============================================================================
 
-INSTALL_BASICS=true
+INSTALL_BASICS=false
+INSTALL_FLAMESHOT=true
 INSTALL_DOCKER=false
 INSTALL_VSCODE=false
 
@@ -135,26 +136,43 @@ else
 fi
 
 # =============================================================================
-# Instalar Componentes Básicos
+# Instalar Flameshot
 # =============================================================================
  
-if [ "$INSTALL_BASICS" = true ]; then
+if [ "$INSTALL_FLAMESHOT" = true ]; then
  
-    echo "🔧 Instalando componentes básicos..."
+    echo "🔧 Instalando flameshot..."
  
     # -------------------------------------------------------------------------
     # Flameshot — ferramenta de captura de tela com anotações
     # https://flameshot.org
     # -------------------------------------------------------------------------
-    echo "📸 Instalando Flameshot..."
-    apt-get install -y flameshot
-    echo "✅ Flameshot instalado com sucesso."
+    echo "📸 Instalando Flameshot e dependências do Wayland..."
+    
+    # Instala o Flameshot e os portais necessários para o Wayland permitir a captura
+    apt-get install -y flameshot xdg-desktop-portal xdg-desktop-portal-gnome
+    
+    # -------------------------------------------------------------------------
+    # Correção Wayland: Criação de um Wrapper
+    # Garante que qualquer chamada ao Flameshot use a variável do Wayland
+    # -------------------------------------------------------------------------
+    echo "⚙️ Configurando Wrapper do Flameshot para Wayland..."
+    
+    cat << 'EOF' > /usr/local/bin/flameshot
+#!/bin/bash
+# Força o Flameshot a rodar nativamente no Wayland
+env QT_QPA_PLATFORM=wayland /usr/bin/flameshot "$@"
+EOF
+
+    # Dá permissão de execução ao wrapper
+    chmod +x /usr/local/bin/flameshot
+    
+    echo "✅ Flameshot instalado e configurado para Wayland com sucesso."
  
     # Para usar o Flameshot:
-    # [flameshot gui]       — abre a interface de captura
-    # [flameshot full]      — captura a tela inteira
-    # Dica: configure um atalho de teclado apontando para [flameshot gui]
+    # O comando [flameshot gui] agora injetará a correção do Wayland automaticamente.
+    # Dica: configure um atalho de teclado nativo do Ubuntu apontando para [flameshot gui]
  
 else
-    echo "❎ INSTALL_BASICS = false (Componentes Básicos ignorado nas configurações)"
+    echo "❎ INSTALL_FLAMESHOT = false (INSTALL_FLAMESHOT ignorado nas configurações)"
 fi
