@@ -28,8 +28,9 @@ fi
 # VARIÁVEIS DE CONFIGURAÇÃO GERAL
 # =============================================================================
 
-INSTALL_DOCKER=true           # Docker Engine + Docker Compose
-INSTALL_VSCODE=true           # Visual Studio Code
+INSTALL_BASICS=true
+INSTALL_DOCKER=false
+INSTALL_VSCODE=false
 
 # =============================================================================
 # Instalar Docker
@@ -131,4 +132,29 @@ if [ "$INSTALL_VSCODE" = true ]; then
  
 else
     echo "❎ INSTALL_VSCODE = false (VSCode ignorado nas configurações)"
+fi
+
+# =============================================================================
+# Instalar Componentes Básicos
+# =============================================================================
+ 
+if [ "$INSTALL_BASICS" = true ]; then
+ 
+    echo "🔧 Instalando componentes básicos..."
+ 
+    # -------------------------------------------------------------------------
+    # Flameshot — ferramenta de captura de tela com anotações
+    # https://flameshot.org
+    # -------------------------------------------------------------------------
+    echo "📸 Instalando Flameshot..."
+    apt-get install -y flameshot
+    echo "✅ Flameshot instalado com sucesso."
+ 
+    # Para usar o Flameshot:
+    # [flameshot gui]       — abre a interface de captura
+    # [flameshot full]      — captura a tela inteira
+    # Dica: configure um atalho de teclado apontando para [flameshot gui]
+ 
+else
+    echo "❎ INSTALL_BASICS = false (Componentes Básicos ignorado nas configurações)"
 fi
